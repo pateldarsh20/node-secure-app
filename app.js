@@ -1,3 +1,4 @@
+const AWS_SECRET_ACCESS_KEY = "AKIA123456789SECRET";
 const express = require("express");
 const app = express();
 
