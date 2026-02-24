@@ -1,14 +1,17 @@
- # Stage 1 -- When dev wnna commmit the changes
-  name: Commit Scan
-  on: [push, pull_request]
+name: Commit Scan
 
-  jobs:
-    trufflehog:
-      runs-on: ubuntu-latest
+on:
+  push:
+  pull_request:
 
-      steps:
-        - uses: actions/checkout@v4
+jobs:
+  trufflehog:
+    runs-on: ubuntu-latest
 
-        - name: Scan for secrets
-          uses: trufflesecurity/trufflehog@main
+    steps:
+      - uses: actions/checkout@v4
 
+      - name: Scan for leaked secrets
+        uses: trufflesecurity/trufflehog@main
+        with:
+          extra_args: --results=verified,unknown --fail
