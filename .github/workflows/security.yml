@@ -2,9 +2,9 @@ name: Secret Scanning with TruffleHog
 
 on:
   push:
-    branches: [ "**" ]  # This triggers on all branches
+    branches: [ "**" ]
   pull_request:
-    branches: [ "**" ]  # This triggers on all PRs
+    branches: [ "**" ]
 
 jobs:
   trufflehog-scan:
@@ -13,18 +13,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Important: gets full git history
+          fetch-depth: 0  # Important: fetches all history for all branches
 
       - name: Run TruffleHog Secret Scan
         uses: trufflesecurity/trufflehog@main
         with:
-          repository: ${{ github.repository }}
           path: ./
           base: ${{ github.event.repository.default_branch }}
           head: HEAD
           extra_args: --only-verified --no-update
 
-      - name: Scan Results
+      - name: Check for Secrets
         if: failure()
         run: |
           echo "❌ SECRETS DETECTED! Please remove them before pushing."
