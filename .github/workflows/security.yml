@@ -1,4 +1,4 @@
-name: Commit Secret Scan
+name: Commit Scan
 
 on:
   push:
@@ -7,14 +7,20 @@ on:
 jobs:
   trufflehog:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          # This ensures the full history is scanned, not just the latest commit
+          fetch-depth: 0 
 
-      - name: Run TruffleHog
+      - name: Scan for leaked secrets
         uses: trufflesecurity/trufflehog@main
         with:
-          extra_args: --results=verified,unknown --debug
+          # Scan the local repository directory
+          path: ./
+          # Scan from the base branch to the current head
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          # --fail ensures the pipeline stops if a secret is found
+          extra_args: --results=verified,unknown --fail
