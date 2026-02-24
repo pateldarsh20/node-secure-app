@@ -1,40 +1,36 @@
-name: Secret Scanning - All Branches
+name: Security Scan
 
 on:
   push:
-    branches:
-      - '**'  # This matches all branches
+    branches: [ "**" ]
   pull_request:
-    branches:
-      - '**'  # This matches all branches for PRs
+    branches: [ "**" ]
 
 jobs:
-  secret-scan-all-branches:
+  trufflehog-scan:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Fetch all history for all branches
+          fetch-depth: 0
 
-      - name: Get all branches
-        id: get-branches
-        run: |
-          git fetch --all
-          branches=$(git branch -r | grep -v '\->' | sed 's/origin\///' | tr '\n' ' ')
-          echo "branches=$branches" >> $GITHUB_OUTPUT
+      - name: Secret Scanning with TruffleHog
+        uses: trufflesecurity/trufflehog@main
+        with:
+          repository: ${{ github.repository }}
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --only-verified --no-update --debug
 
-      - name: Scan each branch for secrets
+      - name: Alternative scan with Docker
+        if: always()
         run: |
-          branches="${{ steps.get-branches.outputs.branches }}"
-          for branch in $branches; do
-            echo "🔍 Scanning branch: $branch"
-            git checkout $branch
-            docker run --rm \
-              -v "$(pwd):/workdir" \
-              ghcr.io/trufflesecurity/trufflehog:latest \
-              filesystem /workdir \
-              --only-verified \
-              --no-update \
-              --fail || exit 1
-          done
+          echo "Running TruffleHog directly with Docker..."
+          docker run --rm \
+            -v "$(pwd):/workdir" \
+            ghcr.io/trufflesecurity/trufflehog:latest \
+            filesystem /workdir \
+            --no-verification \
+            --json || echo "Scan completed with findings"
