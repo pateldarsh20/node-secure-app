@@ -1,4 +1,4 @@
-name: Commit Scan
+name: Commit Secret Scan
 
 on:
   push:
@@ -9,9 +9,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout full repo history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  
 
-      - name: Scan for leaked secrets
+      - name: Run TruffleHog scan
         uses: trufflesecurity/trufflehog@main
         with:
-          extra_args: --results=verified,unknown
+          base: main
+          head: HEAD
+          extra_args: --results=verified,unknown --debug
