@@ -11,13 +11,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Pulls all history so TruffleHog can see past commits
+          fetch-depth: 0 
 
       - name: Scan for leaked secrets
         uses: trufflesecurity/trufflehog@main
         with:
-          # Use '.' to scan the current directory as a git repo
-          path: ./
-          # Using 'base' and 'head' often causes the error you saw. 
-          # Remove them and use 'extra_args' to specify the scan type.
-          extra_args: git file://./ --results=verified,unknown --fail
+          # Remove 'path: ./' here as it can conflict with extra_args
+          base: "" 
+          head: ""
+          extra_args: git file://. --results=verified,unknown --fail
