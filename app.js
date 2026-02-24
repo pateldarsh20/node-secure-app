@@ -10,6 +10,3 @@ app.listen(3000, () => {
   console.log("Server running on port 3000");
 });
 
------BEGIN PRIVATE KEY-----
-MIIEvQIBADANBgkqhkiG9w0BAQEFAASC...
------END PRIVATE KEY-----
