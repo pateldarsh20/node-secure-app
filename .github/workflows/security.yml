@@ -9,14 +9,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout full repo history
+      - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  
+          fetch-depth: 0
 
-      - name: Run TruffleHog scan
+      - name: Run TruffleHog
         uses: trufflesecurity/trufflehog@main
         with:
-          base: main
-          head: HEAD
           extra_args: --results=verified,unknown --debug
