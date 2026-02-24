@@ -1,0 +1,14 @@
+ # Stage 1 -- When dev wnna commmit the changes
+  name: Commit Scan
+  on: [push, pull_request]
+
+  jobs:
+    trufflehog:
+      runs-on: ubuntu-latest
+
+      steps:
+        - uses: actions/checkout@v4
+
+        - name: Scan for secrets
+          uses: trufflesecurity/trufflehog@main
+
