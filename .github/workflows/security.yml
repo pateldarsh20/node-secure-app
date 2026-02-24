@@ -1,22 +1,7 @@
-name: Commit Scan
-
-on:
-  push:
-  pull_request:
-
-jobs:
-  trufflehog:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 
-
-      - name: Scan for leaked secrets
-        uses: trufflesecurity/trufflehog@main
-        with:
-          # Remove 'path: ./' here as it can conflict with extra_args
-          base: "" 
-          head: ""
-          extra_args: git file://. --results=verified,unknown --fail
+- name: TruffleHog Secret Scanning
+  run: |
+    docker run --rm -v "$(pwd):/workdir" \
+      ghcr.io/trufflesecurity/trufflehog:latest \
+      filesystem /workdir \
+      --only-verified \
+      --no-verification
